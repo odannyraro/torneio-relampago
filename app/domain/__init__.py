@@ -1,0 +1,1 @@
+"""Camada de domínio: regras do torneio"""
