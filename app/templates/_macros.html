@@ -1,0 +1,30 @@
+{# Cartão de uma partida: mostra os dois lados e o formulário para informar o placar. #}
+{% macro cartao(torneio, p) %}
+<article class="partida{% if p.jogada %} jogada{% endif %}{% if p.eh_bye %} bye{% endif %}" data-testid="partida-{{ p.id }}">
+  {% if p.eh_bye %}
+    <div class="lado vencedor"><span class="nome">{{ p.nome_vencedor }}</span></div>
+    <p class="nota">Avança direto (folga)</p>
+  {% else %}
+    <form method="post" action="{{ url_for('web.registrar_resultado', torneio_id=torneio.id, partida_id=p.id) }}">
+      <div class="lado{% if p.vencedor_id and p.vencedor_id == p.participante1_id %} vencedor{% endif %}">
+        <span class="nome">{{ p.nome1 }}</span>
+        <input type="number" name="placar1" min="0" max="999" required
+               value="{{ p.placar1 if p.placar1 is not none else '' }}"
+               aria-label="Placar de {{ p.nome1 }}" data-testid="placar1-{{ p.id }}"
+               {% if not p.pode_registrar %}disabled{% endif %}>
+      </div>
+      <div class="lado{% if p.vencedor_id and p.vencedor_id == p.participante2_id %} vencedor{% endif %}">
+        <span class="nome">{{ p.nome2 }}</span>
+        <input type="number" name="placar2" min="0" max="999" required
+               value="{{ p.placar2 if p.placar2 is not none else '' }}"
+               aria-label="Placar de {{ p.nome2 }}" data-testid="placar2-{{ p.id }}"
+               {% if not p.pode_registrar %}disabled{% endif %}>
+      </div>
+      {% if p.pode_registrar %}
+        <button type="submit" class="botao pequeno" data-testid="salvar-{{ p.id }}">
+          {{ "Atualizar" if p.jogada else "Salvar resultado" }}</button>
+      {% endif %}
+    </form>
+  {% endif %}
+</article>
+{% endmacro %}

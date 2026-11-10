@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<h1>Ops!</h1>
+<p class="vazio" data-testid="erro-pagina">{{ mensagem }}</p>
+<p><a href="{{ url_for('web.index') }}">Voltar para a lista de torneios</a></p>
+{% endblock %}

@@ -10,7 +10,7 @@ CAMINHO_ESQUEMA = Path(__file__).with_name("schema.sql")
 def conectar(caminho):
     """Abre uma conexão SQLite com linhas acessíveis por nome e chaves estrangeiras ativas."""
     conexao = sqlite3.connect(caminho)
-    conexao.row_factory = sqlite3.Rows
+    conexao.row_factory = sqlite3.Row
     conexao.execute("PRAGMA foreign_keys = ON")
     return conexao
 

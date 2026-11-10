@@ -1,0 +1,73 @@
+/* Estilo do Torneio Relâmpago: simples, responsivo e com bom contraste. */
+:root {
+  --fundo: #f4f6fa; --superficie: #ffffff; --texto: #151b26; --suave: #5a6577;
+  --borda: #d9dfe8; --destaque: #f5b800; --destaque-texto: #1b1500;
+  --sucesso: #11743a; --erro: #b3261e; --vencedor: #fff4cc;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto);
+       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+a { color: inherit; }
+h1 { font-size: 1.7rem; margin: 0 0 .25rem; }
+h2 { font-size: 1.2rem; }
+
+.topo { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+        padding: .8rem 1.2rem; background: #111827; }
+.marca { color: #fff; font-weight: 700; font-size: 1.15rem; text-decoration: none; }
+.conteudo { max-width: 1100px; margin: 0 auto; padding: 1.2rem; }
+.rodape { text-align: center; color: var(--suave); padding: 1.5rem; font-size: .85rem; }
+
+.botao { display: inline-block; background: var(--destaque); color: var(--destaque-texto); border: 0;
+         border-radius: 8px; padding: .55rem 1rem; font: inherit; font-weight: 600;
+         text-decoration: none; cursor: pointer; }
+.botao:hover { filter: brightness(.95); }
+.botao.pequeno { padding: .3rem .7rem; font-size: .9rem; margin-top: .5rem; }
+.botao.perigo { background: transparent; color: var(--erro); border: 1px solid var(--erro); }
+:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+
+.mensagem { padding: .7rem 1rem; border-radius: 8px; border: 1px solid; background: var(--superficie); }
+.mensagem.sucesso { color: var(--sucesso); border-color: var(--sucesso); }
+.mensagem.erro { color: var(--erro); border-color: var(--erro); }
+
+.lista-torneios { list-style: none; padding: 0; display: grid; gap: 1rem;
+                  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.cartao { background: var(--superficie); border: 1px solid var(--borda); border-radius: 12px; padding: 1rem; }
+.cartao .titulo { font-weight: 700; font-size: 1.1rem; }
+.detalhe, .nota { color: var(--suave); font-size: .9rem; margin: .25rem 0; }
+.progresso { height: 8px; background: var(--borda); border-radius: 4px; overflow: hidden; margin: .5rem 0; }
+.progresso span { display: block; height: 100%; background: var(--destaque); }
+.vazio { background: var(--superficie); border: 1px dashed var(--borda); border-radius: 12px;
+         padding: 2rem; text-align: center; color: var(--suave); }
+
+.formulario { background: var(--superficie); border: 1px solid var(--borda); border-radius: 12px;
+              padding: 1.2rem; display: grid; gap: .6rem; max-width: 560px; }
+.formulario input[type=text], .formulario input:not([type]), .formulario textarea {
+  width: 100%; padding: .55rem; border: 1px solid var(--borda); border-radius: 8px; font: inherit; }
+.formulario fieldset { border: 1px solid var(--borda); border-radius: 8px; }
+.opcao { display: flex; align-items: center; gap: .5rem; }
+
+.cabecalho-torneio { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.campeao { background: var(--vencedor); border: 1px solid var(--destaque); border-radius: 12px;
+           padding: .8rem 1rem; font-size: 1.1rem; }
+
+.chave { display: flex; gap: 1.2rem; overflow-x: auto; padding-bottom: 1rem; }
+.chave .rodada { display: flex; flex-direction: column; min-width: 230px; }
+/* Os cartões se distribuem na altura da coluna; o título da rodada fica sempre no topo. */
+.partidas-da-rodada { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: .8rem; }
+.rodadas-grade { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.rodada h2, .rodada h3 { margin: 0 0 .4rem; font-size: 1rem; }
+
+.partida { background: var(--superficie); border: 1px solid var(--borda); border-radius: 10px;
+           padding: .6rem .7rem; margin-bottom: .6rem; }
+.partida.jogada { border-color: var(--destaque); }
+.lado { display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+        padding: .25rem .4rem; border-radius: 6px; }
+.lado.vencedor { background: var(--vencedor); font-weight: 700; }
+.lado input { width: 4.2rem; padding: .25rem; border: 1px solid var(--borda); border-radius: 6px; font: inherit; }
+.lado input:disabled { background: var(--fundo); }
+
+.tabela-rolavel { overflow-x: auto; }
+.tabela { width: 100%; border-collapse: collapse; background: var(--superficie); }
+.tabela th, .tabela td { padding: .5rem .6rem; text-align: center; border-bottom: 1px solid var(--borda); }
+.tabela td.nome { text-align: left; }
+.tabela tbody tr:first-child { background: var(--vencedor); }

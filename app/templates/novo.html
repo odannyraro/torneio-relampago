@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Novo torneio · Torneio Relâmpago{% endblock %}
+{% block conteudo %}
+<h1>Novo torneio</h1>
+
+<form method="post" class="formulario" action="{{ url_for('web.novo_torneio') }}">
+  <label for="nome">Nome do torneio</label>
+  <input id="nome" name="nome" maxlength="40" value="{{ form.get('nome', '') }}" placeholder="Ex.: Copa da Galera" required>
+
+  <label for="jogo">Jogo (opcional)</label>
+  <input id="jogo" name="jogo" maxlength="40" value="{{ form.get('jogo', '') }}" placeholder="Ex.: FIFA, Mario Kart, Smash">
+
+  <fieldset>
+    <legend>Formato</legend>
+    <label class="opcao"><input type="radio" name="formato" value="mata_mata"
+      {% if form.get('formato', 'mata_mata') == 'mata_mata' %}checked{% endif %}> Mata-mata</label>
+    <label class="opcao"><input type="radio" name="formato" value="pontos_corridos"
+      {% if form.get('formato') == 'pontos_corridos' %}checked{% endif %}> Pontos corridos</label>
+  </fieldset>
+
+  <label for="participantes">Participantes (um nome por linha, de 2 a 32)</label>
+  <textarea id="participantes" name="participantes" rows="8" placeholder="Ana&#10;Bruno&#10;Carla">{{ form.get('participantes', '') }}</textarea>
+
+  <label class="opcao"><input type="checkbox" name="embaralhar" {% if form.get('embaralhar') %}checked{% endif %}>
+    Sortear a ordem dos participantes</label>
+  <label class="opcao"><input type="checkbox" name="ida_e_volta" {% if form.get('ida_e_volta') %}checked{% endif %}>
+    Ida e volta (só pontos corridos)</label>
+
+  <button type="submit" class="botao" data-testid="criar-torneio">Criar torneio</button>
+</form>
+{% endblock %}

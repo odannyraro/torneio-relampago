@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Torneio Relâmpago{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topo">
+    <a class="marca" href="{{ url_for('web.index') }}">⚡ Torneio Relâmpago</a>
+    <a class="botao" href="{{ url_for('web.novo_torneio') }}" data-testid="novo-torneio">Novo torneio</a>
+  </header>
+
+  <main class="conteudo">
+    {# Mensagens de sucesso/erro enviadas pelas rotas via flash() #}
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% for categoria, texto in mensagens %}
+        <p class="mensagem {{ categoria }}" role="alert" data-testid="mensagem">{{ texto }}</p>
+      {% endfor %}
+    {% endwith %}
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="rodape">Trabalho prático de Engenharia de Software 2</footer>
+</body>
+</html>

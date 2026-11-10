@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block conteudo %}
+<h1>Torneios</h1>
+
+{% if torneios %}
+  <ul class="lista-torneios" data-testid="lista-torneios">
+    {% for t in torneios %}
+    <li class="cartao">
+      <a class="titulo" href="{{ url_for('web.ver_torneio', torneio_id=t.id) }}">{{ t.nome }}</a>
+      <p class="detalhe">
+        {{ t.jogo or "Jogo livre" }} · {{ "Mata-mata" if t.formato == "mata_mata" else "Pontos corridos" }}
+        · {{ t.participantes }} participantes
+      </p>
+      <div class="progresso" aria-label="Progresso">
+        <span style="width: {{ t.progresso.percentual }}%"></span>
+      </div>
+      <p class="detalhe">
+        {% if t.campeao %}🏆 Campeão: <strong>{{ t.campeao.nome }}</strong>
+        {% else %}{{ t.progresso.jogadas }} de {{ t.progresso.total }} partidas jogadas{% endif %}
+      </p>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="vazio" data-testid="sem-torneios">Nenhum torneio ainda. Crie o primeiro e chame a galera!</p>
+{% endif %}
+{% endblock %}

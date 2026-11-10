@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_macros.html" import cartao %}
+{% block titulo %}{{ torneio.nome }} · Torneio Relâmpago{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-torneio">
+  <div>
+    <h1 data-testid="nome-torneio">{{ torneio.nome }}</h1>
+    <p class="detalhe">
+      {{ torneio.jogo or "Jogo livre" }} ·
+      {{ "Mata-mata" if torneio.formato == "mata_mata" else "Pontos corridos" }}
+      {% if torneio.ida_e_volta %}(ida e volta){% endif %}
+      · {{ torneio.progresso.jogadas }} de {{ torneio.progresso.total }} partidas jogadas
+    </p>
+  </div>
+  <form method="post" action="{{ url_for('web.excluir_torneio', torneio_id=torneio.id) }}">
+    <button type="submit" class="botao perigo" data-testid="excluir-torneio">Excluir torneio</button>
+  </form>
+</div>
+
+{% if torneio.campeao %}
+  <p class="campeao" data-testid="campeao">🏆 Campeão: <strong>{{ torneio.campeao.nome }}</strong></p>
+{% endif %}
+
+{% if torneio.formato == "mata_mata" %}
+  {# Chave: uma coluna por rodada, da primeira até a final. #}
+  <div class="chave" data-testid="chave">
+    {% for rodada in torneio.rodadas %}
+      <section class="rodada" data-testid="rodada-{{ rodada.numero }}">
+        <h2>{{ rodada.nome }}</h2>
+        <div class="partidas-da-rodada">
+          {% for p in rodada.partidas %}{{ cartao(torneio, p) }}{% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+{% else %}
+  <h2>Classificação</h2>
+  <div class="tabela-rolavel">
+    <table class="tabela" data-testid="classificacao">
+      <thead>
+        <tr><th>#</th><th>Participante</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th>
+            <th>GP</th><th>GC</th><th>SG</th></tr>
+      </thead>
+      <tbody>
+        {% for l in torneio.classificacao %}
+        <tr data-testid="linha-{{ l.posicao }}">
+          <td>{{ l.posicao }}</td><td class="nome">{{ l.nome }}</td>
+          <td><strong>{{ l.pontos }}</strong></td><td>{{ l.jogos }}</td><td>{{ l.vitorias }}</td>
+          <td>{{ l.empates }}</td><td>{{ l.derrotas }}</td><td>{{ l.gols_pro }}</td>
+          <td>{{ l.gols_contra }}</td><td>{{ l.saldo }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="nota">Desempate: pontos, vitórias, saldo de gols, gols pró e ordem alfabética.</p>
+
+  <h2>Rodadas</h2>
+  <div class="rodadas-grade">
+    {% for rodada in torneio.rodadas %}
+      <section class="rodada" data-testid="rodada-{{ rodada.numero }}">
+        <h3>{{ rodada.nome }}</h3>
+        {% for p in rodada.partidas %}{{ cartao(torneio, p) }}{% endfor %}
+        {% if rodada.folgas %}<p class="nota">Folga: {{ rodada.folgas | join(", ") }}</p>{% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

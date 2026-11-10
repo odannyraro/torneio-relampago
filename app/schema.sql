@@ -1,5 +1,6 @@
 -- Esquema do banco de dados do Torneio Relâmpago (SQLite).
--- O status do torneio e a classificação NÃO são armazenados, são derivados das partidas.
+-- O status do torneio e a classificação NÃO são armazenados: são derivados
+-- das partidas, o que evita dados inconsistentes.
 
 CREATE TABLE IF NOT EXISTS torneios (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
