@@ -17,7 +17,7 @@ def index():
 def novo_torneio():
     """Formulário de criação (GET) e criação do torneio (POST)."""
     if request.method == "GET":
-        return render_template("novo.html", form={"formato": "mata_mata", "embaralhar": "on"})
+        return render_template("novo.html", form={"embaralhar": "on"})
 
     try:
         torneio_id = obter_servico().criar_torneio(

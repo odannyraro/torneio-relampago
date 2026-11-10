@@ -13,19 +13,42 @@
   <fieldset>
     <legend>Formato</legend>
     <label class="opcao"><input type="radio" name="formato" value="mata_mata"
-      {% if form.get('formato', 'mata_mata') == 'mata_mata' %}checked{% endif %}> Mata-mata</label>
+      {% if form.get('formato') == 'mata_mata' %}checked{% endif %}> Mata-mata</label>
     <label class="opcao"><input type="radio" name="formato" value="pontos_corridos"
       {% if form.get('formato') == 'pontos_corridos' %}checked{% endif %}> Pontos corridos</label>
+  </fieldset>
+
+  <fieldset id="regulamento" {% if not form.get('formato') %}hidden{% endif %}>
+    <legend>Regulamento</legend>
+    <label class="opcao"><input type="checkbox" name="embaralhar" {% if form.get('embaralhar') %}checked{% endif %}>
+      Sortear a ordem dos participantes</label>
+    <label class="opcao" id="opcao-ida-e-volta" {% if form.get('formato') != 'pontos_corridos' %}hidden{% endif %}>
+      <input type="checkbox" name="ida_e_volta" {% if form.get('ida_e_volta') %}checked{% endif %}
+        {% if form.get('formato') != 'pontos_corridos' %}disabled{% endif %}>
+      Ida e volta</label>
   </fieldset>
 
   <label for="participantes">Participantes (um nome por linha, de 2 a 32)</label>
   <textarea id="participantes" name="participantes" rows="8" placeholder="Ana&#10;Bruno&#10;Carla">{{ form.get('participantes', '') }}</textarea>
 
-  <label class="opcao"><input type="checkbox" name="embaralhar" {% if form.get('embaralhar') %}checked{% endif %}>
-    Sortear a ordem dos participantes</label>
-  <label class="opcao"><input type="checkbox" name="ida_e_volta" {% if form.get('ida_e_volta') %}checked{% endif %}>
-    Ida e volta (só pontos corridos)</label>
-
   <button type="submit" class="botao" data-testid="criar-torneio">Criar torneio</button>
 </form>
+
+<script>
+  const formatoInputs = document.querySelectorAll('input[name="formato"]');
+  const regulamento = document.getElementById('regulamento');
+  const opcaoIdaEVolta = document.getElementById('opcao-ida-e-volta');
+  const idaEVoltaInput = opcaoIdaEVolta.querySelector('input');
+
+  function atualizarRegulamento() {
+    const formatoSelecionado = document.querySelector('input[name="formato"]:checked');
+    const pontosCorridos = formatoSelecionado?.value === 'pontos_corridos';
+    regulamento.hidden = !formatoSelecionado;
+    opcaoIdaEVolta.hidden = !pontosCorridos;
+    idaEVoltaInput.disabled = !pontosCorridos;
+  }
+
+  formatoInputs.forEach((input) => input.addEventListener('change', atualizarRegulamento));
+  atualizarRegulamento();
+</script>
 {% endblock %}
