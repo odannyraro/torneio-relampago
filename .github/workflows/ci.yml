@@ -31,7 +31,7 @@ jobs:
 
       - name: Instalar navegador do Playwright (Linux)
         if: runner.os == 'Linux'
-        run: python -m playwright install --with-deps chromium
+        run: python -m playwright install chromium
 
       - name: Instalar navegador do Playwright (macOS e Windows)
         if: runner.os != 'Linux'
