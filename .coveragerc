@@ -1,9 +1,21 @@
 [run]
 source = app
+omit =
+    app/routes/__init__.py
+    app/repositories/__init__.py
+    app/services/__init__.py
+    app/domain/__init__.py
+    tests/*
 
 [report]
 show_missing = True
 fail_under = 80
 exclude_lines =
     pragma: no cover
+    def __repr__
+    raise NotImplementedError
     if __name__ == .__main__.:
+    pass
+
+[html]
+directory = htmlcov
