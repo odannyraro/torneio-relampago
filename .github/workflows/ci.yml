@@ -23,25 +23,30 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
 
-      - name: Instalar dependências
-        run: python -m pip install -r requirements-dev.txt
+      - name: Instalar dependências e o pacote
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -e .
 
-      - name: Testes de unidade com cobertura (mínimo de 80%)
-        run: python -m pytest tests/unit --cov=app --cov-report=term-missing --cov-report=xml --cov-fail-under=80
-
-      - name: Instalar navegador do Playwright (Linux)
+      - name: Instalar navegadores do Playwright (Linux)
         if: runner.os == 'Linux'
         run: python -m playwright install --with-deps chromium
 
-      - name: Instalar navegador do Playwright (macOS e Windows)
+      - name: Instalar navegadores do Playwright (macOS e Windows)
         if: runner.os != 'Linux'
         run: python -m playwright install chromium
+
+      - name: Testes de unidade com cobertura (mínimo de 80%)
+        run: python -m pytest tests/unit --cov=app --cov-report=term-missing --cov-report=xml --cov-report=html --cov-fail-under=80
 
       - name: Testes end-to-end
         run: python -m pytest tests/e2e
 
-      - name: Guardar relatório de cobertura
+      - name: Guardar relatório de cobertura (XML e HTML)
         uses: actions/upload-artifact@v4
         with:
           name: cobertura-${{ matrix.os }}
-          path: coverage.xml
+          path: |
+            coverage.xml
+            htmlcov/
