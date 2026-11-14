@@ -21,11 +21,11 @@ Sistema web para criação, organização e gerenciamento de torneios em formato
 O **torneio-relampago** tem como objetivo simplificar a logística de competições de curta duração, automatizando o fluxo desde a inscrição dos participantes até a definição do campeão.
 
 ### Funcionalidades principais
-* **Gerenciamento de torneios:** criação e configuração de campeonatos com regras personalizadas.
-* **Controle de participantes:** cadastro de jogadores ou equipes e validação de vagas.
-* **Geração de chaves e partidas:** montagem automática dos confrontos e atualização de rodadas em tempo real.
-* **Registro de placares:** inserção de resultados com avanço automático dos vencedores nas fases seguintes.
-* **Dados de demonstração:** comando integrado (`seed-demo`) para popular o banco rapidamente e facilitar testes manuais.
+* **_Gerenciamento de torneios:_** Criação e configuração de campeonatos com regras personalizadas. 
+* **_Controle de participantes:_** Cadastro de jogadores ou equipes e validação de vagas.
+* **_Geração de chaves e partidas:_** Montagem automática dos confrontos e atualização de rodadas em tempo real.
+* **_Registro de placares:_** Inserção de resultados com avanço automático dos vencedores nas fases seguintes.
+
 
 ## Como executar o sistema
 
@@ -71,3 +71,4 @@ python -m pytest tests/e2e
 
 Relatório de cobertura em HTML (opcional): `python -m pytest tests/unit --cov=app --cov-report=html` e abra `htmlcov/index.html`.
 
+## Uso de Inteligência Artificial
