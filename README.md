@@ -1,8 +1,31 @@
-# torneio-relampago 1.0.0 alpha 1
+<h1 align="center">Torneio Relâmpago</h1>
 
-## Trabalho Pratico - Engenharia de Software II
+<p align="center">
+  <a href="https://github.com/odannyraro/torneio-relampago/actions/">
+    <img src="https://github.com/odannyraro/torneio-relampago/actions/workflows/ci.yml/badge.svg" alt="Status dos Testes">
+  </a>
+  <img src="https://img.shields.io/badge/versão-1.0.0--alpha.1-blue" alt="Versão">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Flask-Web-000000?logo=flask&logoColor=white" alt="Flask">
+  <img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/cobertura-80%25+-brightgreen" alt="Cobertura">
+</p>
 
-### Alunos: Álvaro Lima, Daniel Rodrigues, Sarah Menks
+---
+Sistema web para criação, organização e gerenciamento de torneios em formato relâmpago. Desenvolvido como Trabalho Prático da disciplina de **Engenharia de Software II** (DCC/UFMG).
+
+**Alunos:** Álvaro Lima, Daniel Rodrigues, Sarah Menks
+
+## Sobre o sistema
+
+O **torneio-relampago** tem como objetivo simplificar a logística de competições de curta duração, automatizando o fluxo desde a inscrição dos participantes até a definição do campeão.
+
+### Funcionalidades principais
+* **Gerenciamento de torneios:** criação e configuração de campeonatos com regras personalizadas.
+* **Controle de participantes:** cadastro de jogadores ou equipes e validação de vagas.
+* **Geração de chaves e partidas:** montagem automática dos confrontos e atualização de rodadas em tempo real.
+* **Registro de placares:** inserção de resultados com avanço automático dos vencedores nas fases seguintes.
+* **Dados de demonstração:** comando integrado (`seed-demo`) para popular o banco rapidamente e facilitar testes manuais.
 
 ## Como executar o sistema
 
