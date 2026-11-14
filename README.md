@@ -12,20 +12,21 @@
 </p>
 
 ---
-Sistema web para criação, organização e gerenciamento de torneios em formato relâmpago. Desenvolvido como Trabalho Prático da disciplina de **Engenharia de Software II** (DCC/UFMG).
+Sistema web para criação, organização e gerenciamento de torneios em formato relâmpago. Desenvolvido como Trabalho Prático da disciplina de Engenharia de Software II (DCC/UFMG).
 
-**Alunos:** Álvaro Lima, Daniel Rodrigues, Sarah Menks
+Alunos: Álvaro Lima, Daniel Rodrigues, Sarah Menks
 
 ## Sobre o sistema
 
-O **torneio-relampago** tem como objetivo simplificar a logística de competições de curta duração, automatizando o fluxo desde a inscrição dos participantes até a definição do campeão.
+O Torneio Relâmpago tem como objetivo simplificar a logística de competições de curta duração, automatizando o fluxo desde a inscrição dos participantes até a definição do campeão.
+
+Acesse o projeto pelo site: [https://torneio-relampago.onrender.com/](https://torneio-relampago.onrender.com/)
 
 ### Funcionalidades principais
-* **_Gerenciamento de torneios:_** Criação e configuração de campeonatos com regras personalizadas. 
-* **_Controle de participantes:_** Cadastro de jogadores ou equipes e validação de vagas.
-* **_Geração de chaves e partidas:_** Montagem automática dos confrontos e atualização de rodadas em tempo real.
-* **_Registro de placares:_** Inserção de resultados com avanço automático dos vencedores nas fases seguintes.
-
+* _Gerenciamento de torneios:_ Criação e configuração de campeonatos com regras personalizadas. 
+* _Controle de participantes:_ Cadastro de jogadores ou equipes e validação de vagas.
+* _Geração de chaves e partidas:_ Montagem automática dos confrontos e atualização de rodadas em tempo real.
+* _Registro de placares:_ Inserção de resultados com avanço automático dos vencedores nas fases seguintes.
 
 ## Como executar o sistema
 
