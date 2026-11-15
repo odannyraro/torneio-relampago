@@ -4,6 +4,8 @@ O serviço combina as regras puras do domínio com o repositório. Ele não conh
 Flask: recebe uma conexão SQLite e pode ser testado com um banco em memória.
 """
 import random
+import hashlib
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from ..domain.chaveamento import (
     destino_do_vencedor, gerar_chaveamento, nome_da_rodada, total_de_rodadas,
@@ -13,7 +15,7 @@ from ..domain.erros import ErroDeValidacao, NaoEncontrado
 from ..domain.pontos_corridos import gerar_rodadas, quem_folga
 from ..domain.validacao import (
     MATA_MATA, PONTOS_CORRIDOS, normalizar_participantes, validar_formato,
-    validar_jogo, validar_nome_torneio, validar_placar,
+    validar_jogo, validar_nome_torneio, validar_placar, validar_chave,
 )
 from ..repositories.torneio_repository import TorneioRepository
 
@@ -31,19 +33,21 @@ class TorneioService:
 
     # ================================================================ criação
     def criar_torneio(
-        self, nome, jogo, formato, nomes_participantes, embaralhar=True, ida_e_volta=False
+        self, nome, jogo, formato, nomes_participantes, embaralhar=True, ida_e_volta=False, chave=None
     ):
         """Valida os dados, sorteia a ordem (opcional) e gera todas as partidas. Devolve o id."""
         nome = validar_nome_torneio(nome)
         jogo = validar_jogo(jogo)
         formato = validar_formato(formato)
         nomes = normalizar_participantes(nomes_participantes)
+        chave_hash = generate_password_hash(validar_chave(chave)) if chave is not None else None
+
         if embaralhar:
             self._sorteio.shuffle(nomes)
         ida_e_volta = bool(ida_e_volta) and formato == PONTOS_CORRIDOS
 
         with self._conexao:  # transação: ou cria tudo, ou nada
-            torneio_id = self._repo.criar_torneio(nome, jogo, formato, ida_e_volta)
+            torneio_id = self._repo.criar_torneio(nome, jogo, formato, ida_e_volta, chave_hash)
             ids = self._repo.adicionar_participantes(torneio_id, nomes)
             if formato == MATA_MATA:
                 self._criar_partidas_mata_mata(torneio_id, ids)
@@ -167,6 +171,7 @@ class TorneioService:
             "classificacao": classificacao,
             "campeao": self._descobrir_campeao(mata_mata, partidas, classificacao, progresso, nomes),
             "progresso": progresso,
+            "protegido": torneio["chave_hash"] is not None,
         }
 
     def listar_torneios(self):
@@ -182,6 +187,7 @@ class TorneioService:
                 "participantes": len(detalhe["participantes"]),
                 "progresso": detalhe["progresso"],
                 "campeao": detalhe["campeao"],
+                "protegido": detalhe["protegido"]
             })
         return resumos
 
@@ -254,3 +260,23 @@ class TorneioService:
             lider = classificacao[0]
             return {"id": lider["participante_id"], "nome": lider["nome"]}
         return None
+
+    # ================================================================ chave de edição
+    def verificar_chave(self, torneio_id, chave):
+        """True se a chave confere. Torneios sem chave (antigos) aceitam qualquer edição."""
+        chave_hash = self._obter_torneio_ou_falhar(torneio_id)["chave_hash"]
+        if chave_hash is None:
+            return True
+        return check_password_hash(chave_hash, chave or "")
+
+    def assinatura_da_chave(self, torneio_id):
+        """Identificador estável da chave atual (vai na sessão). Muda se a chave mudar."""
+        chave_hash = self._obter_torneio_ou_falhar(torneio_id)["chave_hash"]
+        if chave_hash is None:
+            return None
+        return hashlib.sha256(chave_hash.encode()).hexdigest()[:16]
+
+    def definir_chave(self, torneio_id, chave):
+        self._obter_torneio_ou_falhar(torneio_id)
+        with self._conexao:
+            self._repo.definir_chave(torneio_id, generate_password_hash(validar_chave(chave)))

@@ -86,3 +86,12 @@ def validar_placar(placar1, placar2, permite_empate):
     if gols1 == gols2 and not permite_empate:
         raise ErroDeValidacao("No mata-mata não pode haver empate: informe um vencedor.")
     return gols1, gols2
+
+
+def validar_chave(chave):
+    chave = (chave or "").strip()
+    if len(chave) < 4:
+        raise ErroDeValidacao("A chave de edição deve ter pelo menos 4 caracteres.")
+    if len(chave) > 64:
+        raise ErroDeValidacao("A chave de edição pode ter no máximo 64 caracteres.")
+    return chave
