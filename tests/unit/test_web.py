@@ -33,6 +33,42 @@ def test_criar_torneio_pelo_formulario_redireciona_para_a_pagina_dele(client):
     assert resposta.headers["Location"].endswith("/torneios/1")
 
 
+def test_chave_de_edicao_e_opcional_na_criacao(client):
+    formulario = client.get("/torneios/novo").get_data(as_text=True)
+    assert 'name="proteger_com_chave"' in formulario
+    assert 'id="chave" name="chave" type="password"' in formulario
+
+    _criar_pelo_formulario(client)
+    pagina = client.get("/torneios/1").get_data(as_text=True)
+    assert 'data-testid="chave-desbloqueio"' not in pagina
+    assert 'data-testid="excluir-torneio"' in pagina
+
+
+def test_torneio_protegido_exige_chave_antes_de_liberar_edicao(client):
+    resposta = _criar_pelo_formulario(
+        client, proteger_com_chave="on", chave="segredo"
+    )
+    assert resposta.status_code == 302
+    pagina = client.get("/torneios/1").get_data(as_text=True)
+    assert 'data-testid="chave-desbloqueio"' in pagina
+    assert 'data-testid="excluir-torneio"' not in pagina
+
+    client.post("/torneios/1/desbloquear", data={"chave": "incorreta"})
+    pagina = client.get("/torneios/1").get_data(as_text=True)
+    assert 'data-testid="chave-desbloqueio"' in pagina
+
+    client.post("/torneios/1/desbloquear", data={"chave": "segredo"})
+    pagina = client.get("/torneios/1").get_data(as_text=True)
+    assert 'data-testid="chave-desbloqueio"' not in pagina
+    assert 'data-testid="excluir-torneio"' in pagina
+
+
+def test_chave_marcada_sem_valor_nao_cria_torneio(client):
+    resposta = _criar_pelo_formulario(client, proteger_com_chave="on")
+    assert resposta.status_code == 400
+    assert "pelo menos 4 caracteres" in resposta.get_data(as_text=True)
+
+
 def test_pagina_do_torneio_mostra_a_chave(client):
     _criar_pelo_formulario(client, embaralhar="")
     html = client.get("/torneios/1").get_data(as_text=True)
@@ -90,6 +126,16 @@ def test_api_cria_e_consulta_um_torneio(client):
     consultado = client.get(f"/api/torneios/{criado.get_json()['id']}").get_json()
     assert consultado["nome"] == "Copa"
     assert len(consultado["partidas"]) == 3
+
+
+def test_api_torneio_com_chave_exige_chave_para_registrar_resultado(client):
+    criado = _criar_pela_api(client, chave="segredo")
+    assert criado.status_code == 201
+
+    url = "/api/torneios/1/partidas/1/resultado"
+    dados = {"placar1": 2, "placar2": 0}
+    assert client.post(url, json=dados).status_code == 403
+    assert client.post(url, json=dados, headers={"X-Chave-Torneio": "segredo"}).status_code == 200
 
 
 def test_api_lista_os_torneios(client):
