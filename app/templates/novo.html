@@ -31,6 +31,25 @@
   <label for="participantes">Participantes (um nome por linha, de 2 a 32)</label>
   <textarea id="participantes" name="participantes" rows="8" placeholder="Ana&#10;Bruno&#10;Carla">{{ form.get('participantes', '') }}</textarea>
 
+  <label class="opcao"><input type="checkbox" name="embaralhar" {% if form.get('embaralhar') %}checked{% endif %}>
+    Sortear a ordem dos participantes</label>
+  <label class="opcao"><input type="checkbox" name="ida_e_volta" {% if form.get('ida_e_volta') %}checked{% endif %}>
+    Ida e volta (só pontos corridos)</label>
+
+  <label class="opcao">
+    <input id="proteger-com-chave" name="proteger_com_chave" type="checkbox"
+      {% if form.get('proteger_com_chave') %}checked{% endif %}>
+    Exigir uma chave para editar este torneio
+  </label>
+  <div id="campo-chave" {% if not form.get('proteger_com_chave') %}hidden{% endif %}>
+    <label for="chave">Chave de edição</label>
+    <input id="chave" name="chave" type="password" minlength="4" maxlength="64"
+      {% if form.get('proteger_com_chave') %}required{% else %}disabled{% endif %}
+      autocomplete="new-password" data-testid="chave">
+    <p class="nota">Só quem tiver essa chave poderá lançar placares e excluir o torneio. Guarde bem: não há recuperação.</p>
+  </div>
+  <p class="nota">Sem chave, qualquer pessoa poderá editar e excluir o torneio.</p>
+
   <button type="submit" class="botao" data-testid="criar-torneio">Criar torneio</button>
 </form>
 
@@ -39,6 +58,9 @@
   const regulamento = document.getElementById('regulamento');
   const opcaoIdaEVolta = document.getElementById('opcao-ida-e-volta');
   const idaEVoltaInput = opcaoIdaEVolta.querySelector('input');
+  const protegerComChave = document.getElementById('proteger-com-chave');
+  const campoChave = document.getElementById('campo-chave');
+  const chaveInput = document.getElementById('chave');
 
   function atualizarRegulamento() {
     const formatoSelecionado = document.querySelector('input[name="formato"]:checked');
@@ -50,5 +72,11 @@
 
   formatoInputs.forEach((input) => input.addEventListener('change', atualizarRegulamento));
   atualizarRegulamento();
+
+  protegerComChave.addEventListener('change', () => {
+    campoChave.hidden = !protegerComChave.checked;
+    chaveInput.disabled = !protegerComChave.checked;
+    chaveInput.required = protegerComChave.checked;
+  });
 </script>
 {% endblock %}

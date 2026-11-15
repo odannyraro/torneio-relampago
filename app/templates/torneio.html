@@ -12,10 +12,27 @@
       · {{ torneio.progresso.jogadas }} de {{ torneio.progresso.total }} partidas jogadas
     </p>
   </div>
+  {% if torneio.pode_editar %}
   <form method="post" action="{{ url_for('web.excluir_torneio', torneio_id=torneio.id) }}">
     <button type="submit" class="botao perigo" data-testid="excluir-torneio">Excluir torneio</button>
   </form>
+  {% endif %}
 </div>
+
+{% if torneio.protegido %}
+  {% if torneio.pode_editar %}
+    <form method="post" action="{{ url_for('web.bloquear', torneio_id=torneio.id) }}" class="nota">
+      Edição liberada!
+      <button type="submit" class="botao pequeno" data-testid="bloquear">Sair da edição</button>
+    </form>
+  {% else %}
+    <form method="post" action="{{ url_for('web.desbloquear', torneio_id=torneio.id) }}" class="formulario">
+      <label for="chave-desbloqueio">Somente leitura. Informe a chave para editar:</label>
+      <input id="chave-desbloqueio" name="chave" type="password" required data-testid="chave-desbloqueio">
+      <button type="submit" class="botao pequeno" data-testid="desbloquear">Liberar edição</button>
+    </form>
+  {% endif %}
+{% endif %}
 
 {% if torneio.campeao %}
   <p class="campeao" data-testid="campeao">🏆 Campeão: <strong>{{ torneio.campeao.nome }}</strong></p>
