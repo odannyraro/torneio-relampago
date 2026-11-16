@@ -31,11 +31,6 @@
   <label for="participantes">Participantes (um nome por linha, de 2 a 32)</label>
   <textarea id="participantes" name="participantes" rows="8" placeholder="Ana&#10;Bruno&#10;Carla">{{ form.get('participantes', '') }}</textarea>
 
-  <label class="opcao"><input type="checkbox" name="embaralhar" {% if form.get('embaralhar') %}checked{% endif %}>
-    Sortear a ordem dos participantes</label>
-  <label class="opcao"><input type="checkbox" name="ida_e_volta" {% if form.get('ida_e_volta') %}checked{% endif %}>
-    Ida e volta (só pontos corridos)</label>
-
   <label class="opcao">
     <input id="proteger-com-chave" name="proteger_com_chave" type="checkbox"
       {% if form.get('proteger_com_chave') %}checked{% endif %}>
