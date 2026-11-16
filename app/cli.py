@@ -41,3 +41,13 @@ def comando_seed_demo():
     """Cria torneios de demonstração (somente se o banco estiver vazio)."""
     criados = semear_demonstracao(get_db())
     click.echo(f"{criados} torneio(s) de demonstração criado(s).")
+
+
+@click.command("definir-chave")
+@click.argument("torneio_id", type=int)
+@click.password_option("--chave", prompt="Nova chave", confirmation_prompt=True)
+@with_appcontext
+def comando_definir_chave(torneio_id, chave):
+    """Define (ou troca) a chave de edição de um torneio."""
+    TorneioService(get_db()).definir_chave(torneio_id, chave)
+    click.echo("Chave definida.")

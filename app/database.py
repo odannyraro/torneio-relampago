@@ -35,6 +35,23 @@ def fechar_db(_erro=None):
         conexao.close()
 
 
+def _colunas(conexao, tabela):
+    return {linha["name"] for linha in conexao.execute(f"PRAGMA table_info({tabela})")}
+
+
+def migrar(conexao):
+    """Ajustes de esquema para bancos já existentes (seguro de rodar várias vezes)."""
+    if "chave_hash" in _colunas(conexao, "torneios"):
+        return
+    try:
+        conexao.execute("ALTER TABLE torneios ADD COLUMN chave_hash TEXT")
+        conexao.commit()
+    except sqlite3.OperationalError:
+        # Outro worker pode ter feito o mesmo ao mesmo tempo; só ignore se a coluna já existe.
+        if "chave_hash" not in _colunas(conexao, "torneios"):
+            raise
+
+
 def init_app(app):
     """Registra o ciclo de vida do banco na aplicação e garante que o esquema existe."""
     caminho = app.config["DATABASE"]
@@ -43,3 +60,4 @@ def init_app(app):
     app.teardown_appcontext(fechar_db)
     with app.app_context():
         criar_tabelas(get_db())
+        migrar(get_db())

@@ -61,3 +61,24 @@ def test_excluir_torneio_remove_da_lista(pagina, servidor):
 
     expect(pagina.locator("[data-testid=mensagem]")).to_contain_text("Torneio excluído")
     expect(pagina.locator("[data-testid=sem-torneios]")).to_be_visible()
+
+
+def test_torneio_com_chave_pede_desbloqueio_antes_de_editar(pagina, servidor):
+    pagina.goto(f"{servidor}/torneios/novo")
+    pagina.fill("#nome", "Copa Protegida")
+    pagina.check("input[value=mata_mata]")
+    pagina.fill("#participantes", "Ana\nBia")
+    pagina.check("#proteger-com-chave")
+    expect(pagina.locator("#chave")).to_be_visible()
+    pagina.fill("#chave", "segredo")
+    pagina.click("[data-testid=criar-torneio]")
+
+    expect(pagina.locator("[data-testid=chave-desbloqueio]")).to_be_visible()
+    expect(pagina.locator("[data-testid=placar1-1]")).to_be_disabled()
+
+    pagina.click(".marca")
+    pagina.get_by_role("link", name="Copa Protegida").click()
+    pagina.fill("[data-testid=chave-desbloqueio]", "segredo")
+    pagina.click("[data-testid=desbloquear]")
+
+    expect(pagina.locator("[data-testid=placar1-1]")).to_be_enabled()

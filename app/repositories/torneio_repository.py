@@ -14,10 +14,10 @@ class TorneioRepository:
         self._conexao = conexao
 
     # ------------------------------------------------------------ torneios
-    def criar_torneio(self, nome, jogo, formato, ida_e_volta):
+    def criar_torneio(self, nome, jogo, formato, ida_e_volta, chave_hash=None):
         cursor = self._conexao.execute(
-            "INSERT INTO torneios (nome, jogo, formato, ida_e_volta) VALUES (?, ?, ?, ?)",
-            (nome, jogo, formato, int(ida_e_volta)),
+            "INSERT INTO torneios (nome, jogo, formato, ida_e_volta, chave_hash) VALUES (?, ?, ?, ?, ?)",
+            (nome, jogo, formato, int(ida_e_volta), chave_hash),
         )
         return cursor.lastrowid
 
@@ -35,6 +35,9 @@ class TorneioRepository:
         self._conexao.execute("DELETE FROM participantes WHERE torneio_id = ?", (torneio_id,))
         cursor = self._conexao.execute("DELETE FROM torneios WHERE id = ?", (torneio_id,))
         return cursor.rowcount > 0
+
+    def definir_chave(self, torneio_id, chave_hash):
+        self._conexao.execute("UPDATE torneios SET chave_hash = ? WHERE id = ?", (chave_hash, torneio_id))
 
     # -------------------------------------------------------- participantes
     def adicionar_participantes(self, torneio_id, nomes):

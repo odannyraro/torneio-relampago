@@ -18,3 +18,9 @@ class Config:
     # Se "1", cria torneios de demonstração quando o banco está vazio.
     SEED_DEMO = os.environ.get("SEED_DEMO", "0") == "1"
     TESTING = False
+    # "1" em produção: ativa cookie Secure e exige SECRET_KEY real.
+    PRODUCAO = os.environ.get("PRODUCAO", "0") == "1"
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"   # também protege os POSTs contra CSRF de outros sites
+    SESSION_COOKIE_SECURE = PRODUCAO
+    PERMANENT_SESSION_LIFETIME = 60 * 60 * 24 * 30  # 30 dias
