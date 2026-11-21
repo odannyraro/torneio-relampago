@@ -14,10 +14,14 @@ class TorneioRepository:
         self._conexao = conexao
 
     # ------------------------------------------------------------ torneios
-    def criar_torneio(self, nome, jogo, formato, ida_e_volta, chave_hash=None):
+    def criar_torneio(
+        self, nome, jogo, formato, ida_e_volta, pontos_vitoria, pontos_empate, chave_hash=None
+    ):
         cursor = self._conexao.execute(
-            "INSERT INTO torneios (nome, jogo, formato, ida_e_volta, chave_hash) VALUES (?, ?, ?, ?, ?)",
-            (nome, jogo, formato, int(ida_e_volta), chave_hash),
+            """INSERT INTO torneios
+               (nome, jogo, formato, ida_e_volta, pontos_vitoria, pontos_empate, chave_hash)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (nome, jogo, formato, int(ida_e_volta), pontos_vitoria, pontos_empate, chave_hash),
         )
         return cursor.lastrowid
 

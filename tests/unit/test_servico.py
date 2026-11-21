@@ -66,6 +66,69 @@ def test_ida_e_volta_e_ignorada_no_mata_mata(servico):
     assert torneio["ida_e_volta"] is False
 
 
+def test_pontuacoes_personalizadas_sao_persistidas_e_usadas_na_classificacao(servico):
+    torneio_id = servico.criar_torneio(
+        "Liga", "", "pontos_corridos", ["Ana", "Bia"],
+        embaralhar=False, pontos_vitoria=5, pontos_empate=0,
+    )
+    partida = _partida(servico, torneio_id, 1, 0)
+    servico.registrar_resultado(torneio_id, partida["id"], 2, 0)
+
+    torneio = servico.obter_torneio(torneio_id)
+    assert (torneio["pontos_vitoria"], torneio["pontos_empate"]) == (5, 0)
+    assert [linha["pontos"] for linha in torneio["classificacao"]] == [5, 0]
+
+
+def test_pontos_corridos_usam_pontuacoes_padrao_quando_nao_configuradas(servico):
+    torneio = servico.obter_torneio(_pontos_corridos(servico, ["Ana", "Bia"]))
+
+    assert (torneio["pontos_vitoria"], torneio["pontos_empate"]) == (3, 1)
+
+
+def test_pontuacoes_de_torneios_diferentes_sao_independentes(servico):
+    padrao_id = _pontos_corridos(servico, ["Ana", "Bia"])
+    personalizado_id = _pontos_corridos(
+        servico, ["Caio", "Duda"], pontos_vitoria=6, pontos_empate=2
+    )
+
+    padrao = servico.obter_torneio(padrao_id)
+    personalizado = servico.obter_torneio(personalizado_id)
+    assert (padrao["pontos_vitoria"], padrao["pontos_empate"]) == (3, 1)
+    assert (personalizado["pontos_vitoria"], personalizado["pontos_empate"]) == (6, 2)
+
+
+def test_empate_concede_a_pontuacao_configurada_aos_dois_participantes(servico):
+    torneio_id = _pontos_corridos(
+        servico, ["Ana", "Bia"], pontos_vitoria=4, pontos_empate=2
+    )
+    partida = _partida(servico, torneio_id, 1, 0)
+    servico.registrar_resultado(torneio_id, partida["id"], 1, 1)
+
+    torneio = servico.obter_torneio(torneio_id)
+    assert {linha["pontos"] for linha in torneio["classificacao"]} == {2}
+    assert {linha["empates"] for linha in torneio["classificacao"]} == {1}
+
+
+@pytest.mark.parametrize(
+    ("pontos_vitoria", "pontos_empate"),
+    [(0, 0), (3, -1), (2, 2), ("3.5", 1)],
+)
+def test_criacao_de_pontos_corridos_rejeita_pontuacao_invalida(
+    servico, pontos_vitoria, pontos_empate
+):
+    with pytest.raises(ErroDeValidacao):
+        _pontos_corridos(
+            servico, pontos_vitoria=pontos_vitoria, pontos_empate=pontos_empate
+        )
+    assert servico.listar_torneios() == []
+
+
+def test_mata_mata_ignora_opcoes_de_pontuacao(servico):
+    torneio_id = _mata_mata(servico, pontos_vitoria=0, pontos_empate=0)
+    torneio = servico.obter_torneio(torneio_id)
+    assert (torneio["pontos_vitoria"], torneio["pontos_empate"]) == (3, 1)
+
+
 def test_rodadas_de_pontos_corridos_informam_quem_folga(servico):
     torneio = servico.obter_torneio(_pontos_corridos(servico, ["Ana", "Bia", "Caio"]))
     assert len(torneio["rodadas"]) == 3

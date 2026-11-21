@@ -15,7 +15,7 @@ from ..domain.erros import ErroDeValidacao, NaoEncontrado
 from ..domain.pontos_corridos import gerar_rodadas, quem_folga
 from ..domain.validacao import (
     MATA_MATA, PONTOS_CORRIDOS, normalizar_participantes, validar_formato,
-    validar_jogo, validar_nome_torneio, validar_placar, validar_chave,
+    validar_jogo, validar_nome_torneio, validar_placar, validar_chave, validar_pontuacoes,
 )
 from ..repositories.torneio_repository import TorneioRepository
 
@@ -33,12 +33,17 @@ class TorneioService:
 
     # ================================================================ criação
     def criar_torneio(
-        self, nome, jogo, formato, nomes_participantes, embaralhar=True, ida_e_volta=False, chave=None
+        self, nome, jogo, formato, nomes_participantes, embaralhar=True, ida_e_volta=False,
+        chave=None, pontos_vitoria=3, pontos_empate=1,
     ):
         """Valida os dados, sorteia a ordem (opcional) e gera todas as partidas. Devolve o id."""
         nome = validar_nome_torneio(nome)
         jogo = validar_jogo(jogo)
         formato = validar_formato(formato)
+        if formato == PONTOS_CORRIDOS:
+            pontos_vitoria, pontos_empate = validar_pontuacoes(pontos_vitoria, pontos_empate)
+        else:
+            pontos_vitoria, pontos_empate = 3, 1
         nomes = normalizar_participantes(nomes_participantes)
         chave_hash = generate_password_hash(validar_chave(chave)) if chave is not None else None
 
@@ -47,7 +52,9 @@ class TorneioService:
         ida_e_volta = bool(ida_e_volta) and formato == PONTOS_CORRIDOS
 
         with self._conexao:  # transação: ou cria tudo, ou nada
-            torneio_id = self._repo.criar_torneio(nome, jogo, formato, ida_e_volta, chave_hash)
+            torneio_id = self._repo.criar_torneio(
+                nome, jogo, formato, ida_e_volta, pontos_vitoria, pontos_empate, chave_hash
+            )
             ids = self._repo.adicionar_participantes(torneio_id, nomes)
             if formato == MATA_MATA:
                 self._criar_partidas_mata_mata(torneio_id, ids)
@@ -155,7 +162,10 @@ class TorneioService:
                 Resultado(p["participante1_id"], p["participante2_id"], p["placar1"], p["placar2"])
                 for p in partidas if p["jogada"]
             ]
-            linhas = calcular_classificacao([(p["id"], p["nome"]) for p in participantes], resultados)
+            linhas = calcular_classificacao(
+                [(p["id"], p["nome"]) for p in participantes], resultados,
+                torneio["pontos_vitoria"], torneio["pontos_empate"],
+            )
             classificacao = [linha.para_dict() for linha in linhas]
 
         return {
@@ -164,6 +174,8 @@ class TorneioService:
             "jogo": torneio["jogo"],
             "formato": torneio["formato"],
             "ida_e_volta": bool(torneio["ida_e_volta"]),
+            "pontos_vitoria": torneio["pontos_vitoria"],
+            "pontos_empate": torneio["pontos_empate"],
             "criado_em": torneio["criado_em"],
             "participantes": [{"id": p["id"], "nome": p["nome"]} for p in participantes],
             "partidas": partidas,

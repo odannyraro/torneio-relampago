@@ -43,17 +43,17 @@ class LinhaClassificacao:
         return dados
 
 
-def _registrar_jogo(linha, gols_pro, gols_contra):
+def _registrar_jogo(linha, gols_pro, gols_contra, pontos_vitoria, pontos_empate):
     """Atualiza a linha de um participante com o resultado de uma partida."""
     linha.jogos += 1
     linha.gols_pro += gols_pro
     linha.gols_contra += gols_contra
     if gols_pro > gols_contra:
         linha.vitorias += 1
-        linha.pontos += PONTOS_VITORIA
+        linha.pontos += pontos_vitoria
     elif gols_pro == gols_contra:
         linha.empates += 1
-        linha.pontos += PONTOS_EMPATE
+        linha.pontos += pontos_empate
     else:
         linha.derrotas += 1
 
@@ -64,14 +64,21 @@ def _chave_de_ordenacao(linha):
 
 
 def calcular_classificacao(
-    participantes: Sequence[Tuple[int, str]], resultados: Iterable[Resultado]
+    participantes: Sequence[Tuple[int, str]], resultados: Iterable[Resultado],
+    pontos_vitoria=PONTOS_VITORIA, pontos_empate=PONTOS_EMPATE,
 ):
     """Monta a tabela ordenada a partir dos participantes (id, nome) e dos resultados."""
     tabela = {pid: LinhaClassificacao(pid, nome) for pid, nome in participantes}
 
     for resultado in resultados:
-        _registrar_jogo(tabela[resultado.participante1_id], resultado.placar1, resultado.placar2)
-        _registrar_jogo(tabela[resultado.participante2_id], resultado.placar2, resultado.placar1)
+        _registrar_jogo(
+            tabela[resultado.participante1_id], resultado.placar1, resultado.placar2,
+            pontos_vitoria, pontos_empate,
+        )
+        _registrar_jogo(
+            tabela[resultado.participante2_id], resultado.placar2, resultado.placar1,
+            pontos_vitoria, pontos_empate,
+        )
 
     linhas = sorted(tabela.values(), key=_chave_de_ordenacao)
     for posicao, linha in enumerate(linhas, start=1):

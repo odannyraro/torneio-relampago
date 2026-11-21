@@ -24,7 +24,7 @@ def detalhar(torneio_id):
 
 @bp.post("/torneios")
 def criar():
-    """Corpo JSON: nome, jogo, formato, participantes (lista) e, opcionalmente, embaralhar/ida_e_volta. Chave é opcional."""
+    """Corpo JSON: nome, jogo, formato, participantes e opções. Pontuações são opcionais."""
     dados = request.get_json(silent=True) or {}
     servico = obter_servico()
     torneio_id = servico.criar_torneio(
@@ -34,6 +34,8 @@ def criar():
         nomes_participantes=dados.get("participantes"),
         embaralhar=bool(dados.get("embaralhar", True)),
         ida_e_volta=bool(dados.get("ida_e_volta", False)),
+        pontos_vitoria=dados.get("pontos_vitoria", 3),
+        pontos_empate=dados.get("pontos_empate", 1),
         chave=dados.get("chave") or None
     )
     return jsonify(servico.obter_torneio(torneio_id)), 201

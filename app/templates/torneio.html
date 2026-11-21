@@ -9,6 +9,10 @@
       {{ torneio.jogo or "Jogo livre" }} ·
       {{ "Mata-mata" if torneio.formato == "mata_mata" else "Pontos corridos" }}
       {% if torneio.ida_e_volta %}(ida e volta){% endif %}
+      {% if torneio.formato == "pontos_corridos" %}
+        · Vitória: {{ torneio.pontos_vitoria }} {{ "ponto" if torneio.pontos_vitoria == 1 else "pontos" }}
+        · Empate: {{ torneio.pontos_empate }} {{ "ponto" if torneio.pontos_empate == 1 else "pontos" }}
+      {% endif %}
       · {{ torneio.progresso.jogadas }} de {{ torneio.progresso.total }} partidas jogadas
     </p>
   </div>

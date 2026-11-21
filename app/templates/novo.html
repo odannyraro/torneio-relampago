@@ -26,6 +26,20 @@
       <input type="checkbox" name="ida_e_volta" {% if form.get('ida_e_volta') %}checked{% endif %}
         {% if form.get('formato') != 'pontos_corridos' %}disabled{% endif %}>
       Ida e volta</label>
+    <div id="opcoes-pontuacao" {% if form.get('formato') != 'pontos_corridos' %}hidden{% endif %}>
+      <div class="opcao-pontuacao">
+        <label for="pontos-vitoria">Pontos por vitória</label>
+        <input id="pontos-vitoria" name="pontos_vitoria" type="number" min="1" step="1"
+          value="{{ form.get('pontos_vitoria', 3) }}"
+          {% if form.get('formato') != 'pontos_corridos' %}disabled{% else %}required{% endif %}>
+      </div>
+      <div class="opcao-pontuacao">
+        <label for="pontos-empate">Pontos por empate</label>
+        <input id="pontos-empate" name="pontos_empate" type="number" min="0" step="1"
+          value="{{ form.get('pontos_empate', 1) }}"
+          {% if form.get('formato') != 'pontos_corridos' %}disabled{% else %}required{% endif %}>
+      </div>
+    </div>
   </fieldset>
 
   <label for="participantes">Participantes (um nome por linha, de 2 a 32)</label>
@@ -53,6 +67,8 @@
   const regulamento = document.getElementById('regulamento');
   const opcaoIdaEVolta = document.getElementById('opcao-ida-e-volta');
   const idaEVoltaInput = opcaoIdaEVolta.querySelector('input');
+  const opcoesPontuacao = document.getElementById('opcoes-pontuacao');
+  const pontuacaoInputs = opcoesPontuacao.querySelectorAll('input');
   const protegerComChave = document.getElementById('proteger-com-chave');
   const campoChave = document.getElementById('campo-chave');
   const chaveInput = document.getElementById('chave');
@@ -63,6 +79,11 @@
     regulamento.hidden = !formatoSelecionado;
     opcaoIdaEVolta.hidden = !pontosCorridos;
     idaEVoltaInput.disabled = !pontosCorridos;
+    opcoesPontuacao.hidden = !pontosCorridos;
+    pontuacaoInputs.forEach((input) => {
+      input.disabled = !pontosCorridos;
+      input.required = pontosCorridos;
+    });
   }
 
   formatoInputs.forEach((input) => input.addEventListener('change', atualizarRegulamento));

@@ -1,4 +1,6 @@
 """Validação e normalização dos dados informados pelo usuário."""
+import re
+
 from .erros import ErroDeValidacao
 
 MATA_MATA = "mata_mata"
@@ -9,6 +11,7 @@ MIN_PARTICIPANTES = 2
 MAX_PARTICIPANTES = 32
 TAMANHO_MAX_NOME = 40
 PLACAR_MAXIMO = 999
+PONTUACAO_MAXIMA = 9223372036854775807
 
 
 def validar_nome_torneio(nome):
@@ -34,6 +37,33 @@ def validar_formato(formato):
     if formato not in FORMATOS:
         raise ErroDeValidacao("Escolha um formato válido: mata-mata ou pontos corridos.")
     return formato
+
+
+def validar_pontuacoes(pontos_vitoria, pontos_empate):
+    """Valida as pontuações inteiras de vitória e empate dos pontos corridos."""
+    valores = []
+    for valor in (pontos_vitoria, pontos_empate):
+        if isinstance(valor, bool) or not (
+            isinstance(valor, int)
+            or isinstance(valor, str) and re.fullmatch(r"[+-]?\d+", valor.strip())
+        ):
+            raise ErroDeValidacao("As pontuações devem ser números inteiros.")
+        try:
+            inteiro = int(valor)
+        except ValueError:
+            raise ErroDeValidacao("As pontuações devem ser números inteiros.") from None
+        if inteiro > PONTUACAO_MAXIMA:
+            raise ErroDeValidacao("A pontuação não pode exceder o limite permitido.")
+        valores.append(inteiro)
+
+    vitoria, empate = valores
+    if vitoria <= 0:
+        raise ErroDeValidacao("A pontuação de vitória deve ser maior que zero.")
+    if empate < 0:
+        raise ErroDeValidacao("A pontuação de empate deve ser maior ou igual a zero.")
+    if vitoria <= empate:
+        raise ErroDeValidacao("A pontuação de vitória deve ser maior que a de empate.")
+    return vitoria, empate
 
 
 def normalizar_participantes(nomes):

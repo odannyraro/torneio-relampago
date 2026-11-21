@@ -4,7 +4,7 @@ import pytest
 from app.domain.erros import ErroDeValidacao
 from app.domain.validacao import (
     MAX_PARTICIPANTES, normalizar_participantes, validar_formato, validar_jogo,
-    validar_nome_torneio, validar_placar,
+    validar_nome_torneio, validar_placar, validar_pontuacoes,
 )
 
 
@@ -92,3 +92,22 @@ def test_empate_e_rejeitado_no_mata_mata():
 
 def test_empate_e_permitido_nos_pontos_corridos():
     assert validar_placar(1, 1, permite_empate=True) == (1, 1)
+
+
+def test_pontuacoes_aceitam_inteiros_e_empate_zero():
+    assert validar_pontuacoes("4", 0) == (4, 0)
+
+
+@pytest.mark.parametrize(
+    ("vitoria", "empate", "mensagem"),
+    [
+        ("3.5", 1, "números inteiros"),
+        (3.0, 1, "números inteiros"),
+        (0, 0, "maior que zero"),
+        (3, -1, "maior ou igual a zero"),
+        (2, 2, "maior que a de empate"),
+    ],
+)
+def test_pontuacoes_invalidas_sao_rejeitadas(vitoria, empate, mensagem):
+    with pytest.raises(ErroDeValidacao, match=mensagem):
+        validar_pontuacoes(vitoria, empate)

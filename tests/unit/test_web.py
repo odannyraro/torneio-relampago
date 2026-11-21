@@ -27,6 +27,50 @@ def test_formulario_de_novo_torneio_e_exibido(client):
     assert client.get("/torneios/novo").status_code == 200
 
 
+def test_regulamento_exibe_pontuacoes_somente_em_pontos_corridos(client):
+    pagina = client.get("/torneios/novo").get_data(as_text=True)
+    assert 'id="opcoes-pontuacao" hidden' in pagina
+    assert 'name="pontos_vitoria"' in pagina and 'value="3"' in pagina
+    assert 'name="pontos_empate"' in pagina and 'value="1"' in pagina
+
+    resposta = _criar_pelo_formulario(client, formato="pontos_corridos")
+    assert resposta.status_code == 302
+    detalhes = client.get("/torneios/1").get_data(as_text=True)
+    assert "Vitória: 3 pontos" in detalhes
+    assert "Empate: 1 ponto" in detalhes
+
+
+def test_formulario_rejeita_pontuacao_invalida(client):
+    resposta = _criar_pelo_formulario(
+        client, formato="pontos_corridos", pontos_vitoria="2", pontos_empate="2"
+    )
+    assert resposta.status_code == 400
+    assert "maior que a de empate" in resposta.get_data(as_text=True)
+
+
+def test_formulario_persiste_e_mostra_pontuacoes_personalizadas(client):
+    resposta = _criar_pelo_formulario(
+        client, formato="pontos_corridos", pontos_vitoria="5", pontos_empate="2"
+    )
+    assert resposta.status_code == 302
+
+    pagina = client.get("/torneios/1").get_data(as_text=True)
+    assert "Vitória: 5 pontos" in pagina
+    assert "Empate: 2 pontos" in pagina
+
+
+def test_formulario_rejeita_decimais_e_preserva_pontuacoes_informadas(client):
+    resposta = _criar_pelo_formulario(
+        client, formato="pontos_corridos", pontos_vitoria="3.5", pontos_empate="1"
+    )
+
+    pagina = resposta.get_data(as_text=True)
+    assert resposta.status_code == 400
+    assert "números inteiros" in pagina
+    assert 'name="pontos_vitoria"' in pagina and 'value="3.5"' in pagina
+    assert 'name="pontos_empate"' in pagina and 'value="1"' in pagina
+
+
 def test_criar_torneio_pelo_formulario_redireciona_para_a_pagina_dele(client):
     resposta = _criar_pelo_formulario(client)
     assert resposta.status_code == 302
@@ -126,6 +170,40 @@ def test_api_cria_e_consulta_um_torneio(client):
     consultado = client.get(f"/api/torneios/{criado.get_json()['id']}").get_json()
     assert consultado["nome"] == "Copa"
     assert len(consultado["partidas"]) == 3
+
+
+def test_api_aceita_pontuacoes_personalizadas_e_aplica_na_tabela(client):
+    criado = client.post("/api/torneios", json={
+        "nome": "Liga", "formato": "pontos_corridos", "participantes": ["Ana", "Bia"],
+        "embaralhar": False, "pontos_vitoria": 4, "pontos_empate": 0,
+    })
+    torneio = criado.get_json()
+    assert criado.status_code == 201
+    assert (torneio["pontos_vitoria"], torneio["pontos_empate"]) == (4, 0)
+
+    atualizado = client.post(
+        f"/api/torneios/{torneio['id']}/partidas/1/resultado",
+        json={"placar1": 1, "placar2": 1},
+    ).get_json()
+    assert [linha["pontos"] for linha in atualizado["classificacao"]] == [0, 0]
+
+
+def test_api_aceita_pontuacoes_inteiras_enviadas_como_texto(client):
+    resposta = _criar_pela_api(
+        client, formato="pontos_corridos", pontos_vitoria="4", pontos_empate="2"
+    )
+
+    assert resposta.status_code == 201
+    torneio = resposta.get_json()
+    assert (torneio["pontos_vitoria"], torneio["pontos_empate"]) == (4, 2)
+
+
+def test_api_rejeita_pontuacao_nao_inteira(client):
+    resposta = _criar_pela_api(
+        client, formato="pontos_corridos", pontos_vitoria=3.5, pontos_empate=1
+    )
+    assert resposta.status_code == 400
+    assert "números inteiros" in resposta.get_json()["erro"]
 
 
 def test_api_torneio_com_chave_exige_chave_para_registrar_resultado(client):

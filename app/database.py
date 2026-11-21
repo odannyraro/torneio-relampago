@@ -41,15 +41,25 @@ def _colunas(conexao, tabela):
 
 def migrar(conexao):
     """Ajustes de esquema para bancos já existentes (seguro de rodar várias vezes)."""
-    if "chave_hash" in _colunas(conexao, "torneios"):
-        return
-    try:
-        conexao.execute("ALTER TABLE torneios ADD COLUMN chave_hash TEXT")
-        conexao.commit()
-    except sqlite3.OperationalError:
-        # Outro worker pode ter feito o mesmo ao mesmo tempo; só ignore se a coluna já existe.
-        if "chave_hash" not in _colunas(conexao, "torneios"):
-            raise
+    migracoes = (
+        ("chave_hash", "TEXT"),
+        ("pontos_vitoria", "INTEGER NOT NULL DEFAULT 3 CHECK (pontos_vitoria > 0)"),
+        (
+            "pontos_empate",
+            "INTEGER NOT NULL DEFAULT 1 "
+            "CHECK (pontos_empate >= 0 AND pontos_empate < pontos_vitoria)",
+        ),
+    )
+    for coluna, definicao in migracoes:
+        if coluna in _colunas(conexao, "torneios"):
+            continue
+        try:
+            conexao.execute(f"ALTER TABLE torneios ADD COLUMN {coluna} {definicao}")
+            conexao.commit()
+        except sqlite3.OperationalError:
+            # Outro worker pode ter feito o mesmo ao mesmo tempo; só ignore se a coluna já existe.
+            if coluna not in _colunas(conexao, "torneios"):
+                raise
 
 
 def init_app(app):

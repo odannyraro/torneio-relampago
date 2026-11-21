@@ -28,6 +28,8 @@ def novo_torneio():
             nomes_participantes=request.form.get("participantes", ""),
             embaralhar="embaralhar" in request.form,
             ida_e_volta="ida_e_volta" in request.form,
+            pontos_vitoria=request.form.get("pontos_vitoria", 3),
+            pontos_empate=request.form.get("pontos_empate", 1),
             chave=request.form.get("chave", "") if "proteger_com_chave" in request.form else None,
         )
     except ErroDeValidacao as erro:

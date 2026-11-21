@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS torneios (
     jogo        TEXT    NOT NULL DEFAULT '',
     formato     TEXT    NOT NULL CHECK (formato IN ('mata_mata', 'pontos_corridos')),
     ida_e_volta INTEGER NOT NULL DEFAULT 0,
+    pontos_vitoria INTEGER NOT NULL DEFAULT 3 CHECK (pontos_vitoria > 0),
+    pontos_empate INTEGER NOT NULL DEFAULT 1
+        CHECK (pontos_empate >= 0 AND pontos_empate < pontos_vitoria),
     chave_hash  TEXT,
     criado_em   TEXT    NOT NULL DEFAULT (datetime('now'))
 );

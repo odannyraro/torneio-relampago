@@ -36,6 +36,8 @@ erDiagram
         text jogo
         text formato "mata_mata ou pontos_corridos"
         int ida_e_volta
+        int pontos_vitoria "pontos corridos; padrão 3"
+        int pontos_empate "pontos corridos; padrão 1"
         text criado_em
     }
     PARTICIPANTES {
@@ -77,7 +79,7 @@ Decisões de modelagem:
 - Com "ida e volta", o returno repete as rodadas invertendo os lados.
 
 **Classificação (`domain/classificacao.py`)**
-- Vitória = 3 pontos, empate = 1, derrota = 0.
+- Nos pontos corridos, vitória e empate usam as pontuações inteiras configuradas no regulamento (padrões: 3 e 1); derrota = 0.
 - Desempate, na ordem: pontos, vitórias, saldo de gols, gols pró, nome (alfabético).
 
 ## 4. Fluxo: registrar um resultado

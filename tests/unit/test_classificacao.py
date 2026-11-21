@@ -20,6 +20,14 @@ def test_empate_vale_um_ponto_para_cada_lado():
     assert [linha.empates for linha in tabela] == [1, 1]
 
 
+def test_classificacao_usa_pontuacoes_configuradas():
+    resultados = [Resultado(1, 2, 2, 0), Resultado(1, 2, 1, 1)]
+    tabela = calcular_classificacao(
+        [ANA, BIA], resultados, pontos_vitoria=5, pontos_empate=2
+    )
+    assert [(linha.nome, linha.pontos) for linha in tabela] == [("Ana", 7), ("Bia", 2)]
+
+
 def test_gols_pro_gols_contra_e_saldo_sao_acumulados():
     resultados = [Resultado(1, 2, 3, 1), Resultado(1, 3, 0, 2)]
     ana = next(l for l in calcular_classificacao([ANA, BIA, CAIO], resultados) if l.nome == "Ana")
