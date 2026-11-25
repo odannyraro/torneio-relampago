@@ -56,7 +56,7 @@ O **Torneio Relâmpago** resolve a logística de organizar campeonatos informais
 | **pytest + pytest-cov** | Framework de testes unitários e medição de cobertura |
 | **Playwright** | Automação e execução dos testes *end-to-end* (E2E) em navegadores |
 | **GitHub Actions** | Matriz de CI/CD para execução automatizada em Linux, macOS e Windows |
-| **Waitress + Render** | Servidor WSGI de produção e hospedagem em nuvem |
+| **Render** | Hospedagem em nuvem |
 
 ---
 
@@ -224,6 +224,6 @@ Abaixo estão as evidências dos relatórios de cobertura gerados e validados na
 
 ## 🚀 Deploy em Produção
 
-A aplicação é implantada automaticamente na plataforma **Render** utilizando o servidor **Waitress**. 
+A aplicação é implantada automaticamente na plataforma **Render**. 
 - **URL de Produção:** [https://torneio-relampago.onrender.com/](https://torneio-relampago.onrender.com/)
 - Ambiente, que em seu plano gratuito, disponibiliza disco efêmero. Dessa forma, reiniciando o sistema web após tempo de inatividade ser atingido, porém esse processo de reinicialização leva menos de 60 segundos.
