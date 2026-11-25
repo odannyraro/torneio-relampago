@@ -19,8 +19,7 @@
 Sistema web para criação, organização e gerenciamento de torneios em formato relâmpago. Desenvolvido como Trabalho Prático da disciplina de Engenharia de Software II (DCC/UFMG).
 
 - 🌐 **Sistema em produção:** [https://torneio-relampago.onrender.com/](https://torneio-relampago.onrender.com/)
-- 🎬 **Vídeo de apresentação:** [Link do Vídeo no YouTube](link_ainda_nao_disponivel)
-
+- 🎬 **Vídeo de apresentação:** [Link do Vídeo no YouTube](https://youtu.be/_11DudvyTyk?si=PMTXAVFn8H8mOrwr)
 ---
 
 ## 👥 Integrantes
